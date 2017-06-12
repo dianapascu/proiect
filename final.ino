@@ -10,6 +10,9 @@
 #define DST 2 // numarul pinului
 #define DEBUG 1
 #define ONE_WIRE_BUS 3 // Data wire is plugged into pin 3 on the Arduino
+#define trigPin 8
+#define echoPin 7
+
  
 // MATRIX DECLARATION:
 // Parameter 1 = width of NeoPixel matrix
@@ -156,8 +159,11 @@ void setup() {
   matrix.setTextWrap(false);
   matrix.setBrightness(255);
   matrix.setTextColor(colors[1]);
-  //startupTest();
+  
+  startupTest();
  // rainbow();
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
 
 
 }
@@ -179,9 +185,14 @@ void loop() {
 
     getColor();
     //startupTest();
+    if (sensorContact() < 30 ) {
+      printTemperature();
+    }
+    else {
+     displayWords(currentTime);
+    }
+ 
     
-    //displayWords(currentTime);
-    printTemperature();
     matrix.show();
     delay(500);
     matrix.fillScreen(0);
@@ -660,6 +671,24 @@ void printTemperature() {
   matrix.print(text);
 
   delay(1000);
+}
+
+long sensorContact() {
+  
+  long duration, distance;
+  
+  digitalWrite(trigPin, LOW);  // Added this line
+  delayMicroseconds(2); // Added this line
+  
+  digitalWrite(trigPin, HIGH);
+//  delayMicroseconds(1000); - Removed this line
+  delayMicroseconds(10); // Added this line
+  
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = (duration/2) / 29.1;
+
+  return distance;
 }
 
 
