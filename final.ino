@@ -7,7 +7,9 @@
 #include <OneWire.h>
 
 #define PIN 2
-#define DST 2 // numarul pinului
+#define settime 4 // numarul pinului
+#define setPlus 5
+#define setMinus 6 
 #define DEBUG 1
 #define ONE_WIRE_BUS 3 // Data wire is plugged into pin 3 on the Arduino
 #define trigPin 8
@@ -136,8 +138,12 @@ void setup() {
   
     Wire.begin();
         
-    pinMode(DST, INPUT); // numarul pinului al carui mod vreau sa il setez
-                         // INPUT este modul -> o sa se primeasca un semnal pe pinul mentionat, adica DST
+    pinMode(settime, INPUT); // numarul pinului al carui mod vreau sa il setez
+                                                // INPUT este modul -> o sa se primeasca un semnal pe pinul mentionat, adica DST
+    pinMode(setPlus, INPUT);
+    pinMode(setMinus, INPUT);
+    
+
     delay(3000);
   
 
@@ -153,14 +159,14 @@ void setup() {
 //        rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 //    }
 
-  rtc.adjust(DateTime(2017, 6, 5, 12, 57, 10));
+  rtc.adjust(DateTime(2017, 6, 5, 1, 2, 10));
 
   matrix.begin();
   matrix.setTextWrap(false);
   matrix.setBrightness(255);
   matrix.setTextColor(colors[1]);
   
-  startupTest();
+  //startupTest();
  // rainbow();
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
@@ -173,6 +179,25 @@ void loop() {
   // put your main code here, to run repeatedly:
 
     DateTime currentTime = rtc.now();
+    if (digitalRead(settime) == 0) // citesc digital read de pe pinul 2 = DST (1 sau 0) // 1= buton apasat; //0= butonul nu este apasat // este pentru a da ceasul cu o ora inainte
+    {
+      if(digitalRead(setPlus) == 1) {
+      currentTime = currentTime + TimeSpan(0,0,1,0); // nr de zile, nr de ore, nr de min, nr de sec
+     }
+      if(digitalRead(setMinus) == 1) {
+        currentTime = currentTime + TimeSpan(0,0,-1,0);
+      }
+    }
+
+    if (digitalRead(settime) == 1) // citesc digital read de pe pinul 2 = DST (1 sau 0) // 1= buton apasat; //0= butonul nu este apasat // este pentru a da ceasul cu o ora inainte
+    {
+      if(digitalRead(setPlus) == 1) {
+      currentTime = currentTime + TimeSpan(0,1,0,0); // nr de zile, nr de ore, nr de min, nr de sec
+     }
+      if(digitalRead(setMinus) == 1) {
+        currentTime = currentTime + TimeSpan(0,-1,0,0);
+      }
+    }
 //    Serial.print("Este ora : ");
 //    Serial.print(currentTime.hour());
 
@@ -677,12 +702,11 @@ long sensorContact() {
   
   long duration, distance;
   
-  digitalWrite(trigPin, LOW);  // Added this line
-  delayMicroseconds(2); // Added this line
+  digitalWrite(trigPin, LOW); 
+  delayMicroseconds(2); 
   
   digitalWrite(trigPin, HIGH);
-//  delayMicroseconds(1000); - Removed this line
-  delayMicroseconds(10); // Added this line
+  delayMicroseconds(10); 
   
   digitalWrite(trigPin, LOW);
   duration = pulseIn(echoPin, HIGH);
