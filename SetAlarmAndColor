@@ -1,0 +1,106 @@
+/*
+  Reading a serial ASCII-encoded string.
+
+ This sketch demonstrates the Serial parseInt() function.
+ It looks for an ASCII string of comma-separated values.
+ It parses them into ints, and uses those to fade an RGB LED.
+
+ Circuit: Common-Cathode RGB LED wirosu like so:
+ * rosu anode: digital pin 3
+ * verde anode: digital pin 5
+ * albastru anode: digital pin 6
+ * Cathode : GND
+
+ created 13 Apr 2012
+ by Tom Igoe
+ 
+ modified 14 Mar 2016
+ by Arturo Guadalupi
+*/
+void getAlarm(void);
+void getColors(void);
+
+void setup() {
+  // initialize serial:
+  Serial.begin(9600);
+}
+
+void loop() {
+  int token = Serial.parseInt();
+  if ( token == 1 ) {
+     getAlarm();
+  }
+
+  if( token == 0 ) {
+    getColors();
+  }
+  
+  
+}
+
+
+void getAlarm(){
+// if there's any serial available, read it:
+  while (Serial.available() > 0) {
+
+// look for the next valid integer in the incoming serial stream:
+    int an = Serial.parseInt();
+// do it again:
+    int luna = Serial.parseInt();
+// do it again:
+    int ziua = Serial.parseInt();
+ 
+    int ora = Serial.parseInt();
+    
+    int minut = Serial.parseInt();
+
+     
+// look for the newline. That's the end of your sentence:
+    if (Serial.read() == '\n') {
+
+// print the three numbers in one string as int:
+  
+      Serial.println("Data");
+      Serial.print(ziua);
+      Serial.print(".");
+      Serial.print(luna);
+      Serial.print(".");
+      Serial.println(an);
+      Serial.println("Ora");
+      Serial.print(ora);
+      Serial.print(":");
+      Serial.println(minut);
+      Serial.println("------------------");
+
+}
+}
+}
+
+void getColors(){
+
+// if there's any serial available, read it:
+  while (Serial.available() > 0) {
+
+    int rosu = Serial.parseInt();
+
+    int verde = Serial.parseInt();
+    
+    int albastru = Serial.parseInt();
+     
+// look for the newline. That's the end of your sentence:
+    if (Serial.read() == '\n') {
+
+// print the three numbers in one string as int:
+  
+      Serial.println("Culorile");
+      Serial.print("Rosu: ");
+      Serial.println(rosu);
+      Serial.print("Verde: ");
+      Serial.println(verde);
+      Serial.print("Albastru: ");
+      Serial.println(albastru);
+      Serial.println("------------------");
+
+    }
+    }
+}
